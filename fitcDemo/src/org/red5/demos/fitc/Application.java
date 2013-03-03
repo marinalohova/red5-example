@@ -1,5 +1,6 @@
 package org.red5.demos.fitc;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.red5.server.adapter.ApplicationAdapter;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
-import org.red5.server.api.IScope;
+import org.red5.server.api.scope.IScope;
 import org.red5.server.api.Red5;
 import org.red5.server.api.service.IPendingServiceCall;
 import org.red5.server.api.service.IPendingServiceCallback;
@@ -134,7 +135,7 @@ public class Application extends ApplicationAdapter implements
 	 */
 	public List<String> getStreams() {
 		IConnection conn = Red5.getConnectionLocal();
-		return getBroadcastStreamNames(conn.getScope());
+		return new ArrayList<String>(getBroadcastStreamNames(conn.getScope()));
 	}
 
 	/**

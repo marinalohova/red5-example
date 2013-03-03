@@ -8,18 +8,20 @@
 	</configurations>
     <dependencies>
         <!-- J2EE --> 
-        <dependency org="javax" name="jsp-api" rev="2.1" />
-        <dependency org="javax" name="servlet-api" rev="2.5" />
+        <!--<dependency org="javax" name="jsp-api" rev="2.1" />-->
+        <!--<dependency org="javax" name="servlet-api" rev="2.5" />-->
+        <dependency org="javax" name="javaee-api" rev="5.1.2" />
+
         <!-- Spring --> 
-        <dependency org="spring" name="spring-beans" rev="2.5.6" />
-        <dependency org="spring" name="spring-context" rev="2.5.6" />
-        <dependency org="spring" name="spring-core" rev="2.5.6" />
+        <dependency org="spring" name="spring-beans" rev="3.1.1.RELEASE" />
+        <dependency org="spring" name="spring-context" rev="3.1.1.RELEASE" />
+        <dependency org="spring" name="spring-core" rev="3.1.1.RELEASE" />
         <!-- Logging --> 
-        <dependency name="slf4j-api" rev="1.5.6" />
-        <dependency name="jcl-over-slf4j" rev="1.5.6" />
-        <dependency name="log4j-over-slf4j" rev="1.5.6" />
-        <dependency name="jul-to-slf4j" rev="1.5.6" />
-        <dependency name="logback-core" rev="0.9.14" />
-        <dependency name="logback-classic" rev="0.9.14" />
+        <dependency name="slf4j-api" rev="1.6.6" />
+        <dependency name="jcl-over-slf4j" rev="1.6.6" />
+        <dependency name="log4j-over-slf4j" rev="1.6.6" />
+        <dependency name="jul-to-slf4j" rev="1.6.6" />
+        <dependency name="logback-core" rev="1.0.3" />
+        <dependency name="logback-classic" rev="1.0.3" />
     </dependencies>
 </ivy-module>
