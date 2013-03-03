@@ -1,0 +1,1 @@
+This is a demo project to show how to use authentication routines in Red5.

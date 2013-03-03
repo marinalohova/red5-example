@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**/.svn/" kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="var" path="Red5"/>
+	<classpathentry kind="var" path="Red5/red5.jar"/>
+	<classpathentry kind="var" path="Red5/lib/slf4j-api-1.5.8.jar"/>
+	<classpathentry kind="var" path="Red5/lib/javaee-api-5.1.0.jar"/>
+	<classpathentry kind="var" path="Red5/lib/mina-core-2.0.0-RC1.jar"/>
+	<classpathentry kind="output" path="www/WEB-INF/classes"/>
+</classpath>

@@ -1,0 +1,151 @@
+<?xml version="1.0" ?>
+<project name="echo" basedir="." default="war" xmlns:ivy="antlib:org.apache.ivy.ant">
+    <!-- project properties -->
+    <property environment="env"/>
+    <!-- user overides for project properties -->
+    <property file="${user.home}/build.properties"/>
+    <!-- base project properties -->
+    <property file="build.properties"/>
+    
+    <property name="java.home" value="${env.JDK_HOME}"/>
+    <property name="src.dir" value="src"/>
+    <property name="lib.dir" value="www/WEB-INF/lib"/>
+    <property name="classes.dir" value="www/WEB-INF/classes"/>
+    <property name="dist.dir" value="dist"/>
+	
+    <path id="project.classpath">
+        <fileset dir="${red5.root}/lib"/>
+        <pathelement location="${red5.root}/red5.jar"/>
+        <pathelement location="${red5.root}/lib/red5.jar"/>
+    	<!-- project specific libs -->
+        <fileset dir="${lib.dir}"/>
+    </path>
+    
+    <target name="prepare">
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${lib.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+    </target>
+    
+    <target name="clean">
+        <delete dir="${classes.dir}"/>
+        <delete dir="${dist.dir}"/>    	
+    </target>
+
+	<target name="retrieve" description="Retrieves the libraries if needed">
+		<taskdef uri="antlib:org.apache.ivy.ant" resource="org/apache/ivy/ant/antlib.xml"
+		 classpath="${basedir}/lib/ivy-trunk.jar"/>
+		<property name="ivy.lib.dir" value="${basedir}/lib"/>
+		<ivy:settings file="ivysettings.xml"/>
+		<ivy:resolve file="ivy.xml" />
+		<ivy:retrieve />
+	</target>    
+    
+    <target name="compile" depends="prepare, retrieve">
+        <condition property="java.target_version" value="1.5">
+            <not>
+                <isset property="java.target_version"/>
+            </not>
+        </condition>
+        <echo>java.home is ${java.home} and the target version is ${java.target_version}</echo>
+        <echo>red5.root is ${red5.root}</echo>
+        <echo>javac version: ${java.version}</echo>
+        <property name="dest.dir" value="${classes.dir}"/>
+        <javac sourcepath="" srcdir="${src.dir}" destdir="${dest.dir}" classpathref="project.classpath"
+             optimize="${build.optimize}" verbose="${build.verbose}" fork="${build.fork}" nowarn="${build.nowarn}"
+             deprecation="${build.deprecation}" debug="${debug.state}" compiler="modern"
+             source="${java.target_version}" target="${java.target_version}" listfiles="false"/>
+             
+		<copy file="${src.dir}/logback-${ant.project.name}.xml" todir="${dest.dir}" />
+		<copy file="${src.dir}/*.properties" todir="${dest.dir}" failonerror="false" />              
+    </target>
+    
+    <target name="jar" depends="compile">
+        <tstamp prefix="build">
+            <format property="TODAY" pattern="d-MMMM-yyyy" locale="en"/>
+        </tstamp>
+        <jar destfile="${dist.dir}/${ant.project.name}.jar">
+            <fileset dir="${classes.dir}">
+                <include name="**"/>
+            </fileset>
+			<manifest>
+				<attribute name="Built" value="${build.TODAY} by ${user.name}"/>
+				<attribute name="Build-OS" value="${os.name} ${os.version}"/>
+				<attribute name="Build-Java" value="Java ${java.version}"/>
+			</manifest>
+        </jar>
+    </target>
+    
+    <target name="war" depends="compile">
+        <tstamp prefix="build">
+            <format property="TODAY" pattern="d-MMMM-yyyy" locale="en"/>
+        </tstamp>    	
+		<war destfile="${dist.dir}/${ant.project.name}.war" webxml="www/WEB-INF/web.xml">
+			<fileset dir="www">
+				<exclude name="**/src/**"/>
+				<exclude name="**/*.jar"/>
+			</fileset>
+			<lib dir="${lib.dir}"/>			
+			<manifest>
+				<attribute name="Built" value="${build.TODAY} by ${user.name}"/>
+				<attribute name="Build-OS" value="${os.name} ${os.version}"/>
+				<attribute name="Build-Java" value="Java ${java.version}"/>
+			</manifest>
+		</war>		
+    </target>
+    
+	<!-- Updates snapshot repository -->
+	<target name="upload-snapshot" depends="war">
+		<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpath="svnant.jar" /> 
+	
+		<condition property="java.version.name" value="java5" else="java6">
+			<not>
+				<available classname="javax.script.Bindings"/>
+			</not>
+		</condition>
+	
+		<svn username="${svn.login}" password="${svn.password}" failonerror="false">
+			<status path="build.xml" textStatusProperty="svn.info.status" lastChangedRevisionProperty="svn.info.lastrev" revisionProperty="svn.info.rev"/> 
+		</svn>
+		<echo message="Svn info - status: ${svn.info.status} last rev: ${svn.info.lastrev} rev: ${svn.info.rev}"/>
+	
+		<property name="snapshot.name" value="${ant.project.name}-r${svn.info.rev}-${java.version.name}.war"/>
+		
+	
+		<echo message="Destination: ${snapshot.path}${snapshot.name}"/>
+	
+		<!-- make a copy of the red5.jar with a versioned name + the java version -->
+		<move file="dist/${ant.project.name}.war" tofile="${snapshot.path}${snapshot.name}"/>
+	
+		<!-- check if the file is already versioned -->
+		<svn username="${svn.login}" password="${svn.password}" failonerror="false">
+			<status path="${svn.url}/snapshots/${snapshot.name}" textStatusProperty="svn.info.status"/> 
+		</svn>
+		<echo message="Svn info - status: ${svn.info.status}"/>	
+	
+       	<condition property="add-file" value="true" else="false">
+	   		<equals arg1="${svn.info.status}" arg2="unversioned"/>
+      	</condition>
+       	<echo message='File does not exist in repository: ${add-file}'/>
+
+		<antcall target="svn-add" inheritAll="true" inheritRefs="true">
+			<param name="file.path" value="${snapshot.path}${snapshot.name}"/>
+		</antcall>
+		
+		<svn username="${svn.login}" password="${svn.password}" failonerror="false">
+			<commit message="Added snapshot" file="${snapshot.path}${snapshot.name}"/>
+		</svn>	
+	</target>
+	
+	<target name="svn-add" if="add-file">
+		<svn username="${svn.login}" password="${svn.password}" failonerror="false">
+			<add file="${file.path}" force="true"/>
+		</svn>	
+	</target>	    
+	
+    <target name="all" depends="clean, prepare, compile, jar, war"/>
+    
+    <target name="usage">
+        <echo>Type ant -p for available targets"</echo>
+    </target>
+</project>

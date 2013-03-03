@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**/.svn/" kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JVM 1.6"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="var" path="Red5/red5.jar"/>
+	<classpathentry kind="var" path="Red5/lib/jsp-api-2.1.jar"/>
+	<classpathentry kind="var" path="Red5/lib/logback-classic-0.9.9.jar"/>
+	<classpathentry kind="var" path="Red5/lib/logback-core-0.9.9.jar"/>
+	<classpathentry kind="var" path="Red5/lib/servlet-api-2.5.jar"/>
+	<classpathentry kind="var" path="Red5/lib/slf4j-api-1.5.2.jar"/>
+	<classpathentry kind="var" path="Red5/lib/spring-beans-2.5.5.jar"/>
+	<classpathentry kind="var" path="Red5/lib/spring-context-2.5.5.jar"/>
+	<classpathentry kind="var" path="Red5/lib/spring-core-2.5.5.jar"/>
+	<classpathentry kind="output" path="www/WEB-INF/classes"/>
+</classpath>

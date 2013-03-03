@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<project name="Red5Examples" basedir="." default="dist" >
+  <macrodef name="antdemo">
+    <attribute name="demo" />
+    <attribute name="target" default="dist" />
+    <sequential>
+      <echo message="antdemo demo=@{demo} target=@{target}"/>
+      <ant dir="@{demo}" target="@{target}"/>
+    </sequential>
+  </macrodef>
+
+  <target name="dist"
+    depends="dist-noflex, dist-flex"
+    description="build all demos" />
+
+  <target name="dist-flex"
+    description="build all demos that depend on Flex">
+    <antdemo demo="LocalApp" target="compile" />
+    <antdemo demo="RemoteApp" target="compile" />
+  </target>
+  <target name="dist-noflex"
+    description="build all demos that don't depend on Flex">
+    <antdemo demo="SOSample" target="war" />
+    <antdemo demo="admin" target="war" />
+    <antdemo demo="bwcheck" target="war" />
+    <antdemo demo="dump" target="war" />
+    <antdemo demo="echo" target="war" />
+    <antdemo demo="fitcDemo" target="war" />
+    <!-- <antdemo demo="loadtest" target="war" /> -->
+    <antdemo demo="messageRecorder" target="war" />
+    <antdemo demo="midiDemo" target="war" />
+    <antdemo demo="oflaDemo" target="war" />
+    <antdemo demo="test" target="war" />
+    <antdemo demo="tutorial" target="war" />
+  </target>
+
+  <target name="clean"
+    description="clean all demos">
+    <antdemo demo="LocalApp" target="clean" />
+    <antdemo demo="RemoteApp" target="clean" />
+    <antdemo demo="SOSample" target="clean" />
+    <antdemo demo="admin" target="clean" />
+    <antdemo demo="bwcheck" target="clean" />
+    <antdemo demo="dump" target="clean" />
+    <antdemo demo="echo" target="clean" />
+    <antdemo demo="fitcDemo" target="clean" />
+    <antdemo demo="loadtest" target="clean" />
+    <antdemo demo="messageRecorder" target="clean" />
+    <antdemo demo="midiDemo" target="clean" />
+    <antdemo demo="oflaDemo" target="clean" />
+    <antdemo demo="test" target="clean" />
+    <antdemo demo="tutorial" target="clean" />
+  </target>
+
+</project>

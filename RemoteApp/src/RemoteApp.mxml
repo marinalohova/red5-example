@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+	pageTitle="Remote Application"
+	horizontalAlign="center" verticalAlign="middle"
+	width="400" height="300" layout="absolute" applicationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.core.ScrollPolicy;
+			import mx.collections.ArrayCollection;
+			import mx.controls.List;
+
+			private var nc:NetConnection;
+			private var ns:NetStream;
+
+			public function init():void {				
+				Security.allowDomain("*");
+
+				//  create the netConnection
+				nc = new NetConnection();
+				nc.objectEncoding = ObjectEncoding.AMF3;
+
+				// add listeners for netstatus and security issues
+				nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+				nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+				nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, netASyncError);
+            	nc.addEventListener(IOErrorEvent.IO_ERROR, netIOError);
+            	
+            	nc.connect(null);
+            	
+            	// set it's client/focus to this
+				nc.client = this;
+			}
+
+			public function doConnection(protocol:String):void {
+				if (nc.connected) {
+					nc.close();
+				}				
+				// connect
+				if (protocol === "http") {
+					nc.connect('http://localhost:8080/RemoteApp/gateway');		
+					// call server-side method
+					// create a responder and set it to getServerResponse
+					var nc_responder:Responder = new Responder(getServerResponse, getServerStatus);
+					// call the server side method named "hello"
+					nc.call("hello", nc_responder);					
+				} else {
+					nc.connect('rtmp://localhost/RemoteApp');
+				}
+			}
+
+			public function onBWDone():void {
+				// have to have this for an RTMP connection
+			}
+
+			private function netStatusHandler(event:NetStatusEvent):void {
+				//this event only gets called when making an RTMP connection
+				if (event.info.code == "NetConnection.Connect.Success") {
+					// we can't use the connection until we get this flag back
+					// call server-side method
+					// create a responder and set it to getServerResponse
+					var nc_responder:Responder = new Responder(getServerResponse, getServerStatus);
+					// call the server side method named "hello"
+					nc.call("hello", nc_responder);
+				}
+	        }
+
+	        public function getServerResponse(resp:Object):void {
+				serverResponse.text = resp as String
+			}
+
+	        public function getServerStatus(stat:Object):void {
+				serverResponse.text = stat as String
+			}
+
+			private function securityErrorHandler(event:SecurityErrorEvent):void {
+				Alert.show('Security error - ' + event.text);
+			}
+			
+			private function netIOError(event:IOErrorEvent):void { 
+				Alert.show('IO error - ' + event.text);
+			}
+				
+			private function netASyncError(event:AsyncErrorEvent):void {
+				Alert.show('ASync error - ' + event.text);
+			}
+
+		]]>
+	</mx:Script>
+	<mx:VBox height="300" horizontalAlign="center" verticalAlign="middle" x="0" y="0" width="400" borderColor="#000000" cornerRadius="10">
+			<mx:Label text="Application url" fontWeight="bold" fontSize="14"/>
+			<mx:TextInput id="givenPath" text="rtmp://localhost/RemoteApp" width="253" cornerRadius="6" editable="false"/>
+			<mx:Button label="Connect RTMP" click="doConnection('rtmp')" toolTip="Connect" width="100"/>
+
+			<mx:Label text="Application url" fontWeight="bold" fontSize="14"/>
+			<mx:TextInput id="givenPathHttp" text="http://localhost:8080/RemoteApp/gateway" width="253" cornerRadius="6" editable="false"/>
+			<mx:Button label="Connect HTTP" click="doConnection('http')" toolTip="Connect" width="100"/>
+
+			<mx:Label text="Server response" fontWeight="bold" fontSize="14"/>
+			<mx:TextInput id="serverResponse" width="200" text=""/>
+	</mx:VBox>    
+</mx:Application>

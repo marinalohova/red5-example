@@ -1,0 +1,158 @@
+<?xml version="1.0"?>
+<project name="LocalApp" basedir="." default="compile">
+
+    <!-- http://labs.adobe.com/wiki/index.php/Flex_Ant_Tasks -->
+    <property environment="env"/>
+
+	<!-- Define variables/paths used in this build script -->
+	<property file="build.properties" />
+
+    <property name="FLEX_HOME" value="${env.FLEX_HOME}"/>
+	
+	<!-- http://labs.adobe.com/wiki/index.php/Flex_Ant_Tasks -->
+        <taskdef resource="flexTasks.tasks" classpath="${env.FLEX_HOME}/ant/lib/flexTasks.jar" /> 	
+    
+	<!--
+		Have you edit the properties file to make sure the paths are right oo your system?
+	-->
+	<target name="properties">
+		<fail unless="asdoc.exe">The "asdoc.exe" property must be set in ${build.dir}/build.properties.</fail>
+		<fail unless="compc.exe">The "compc.exe" property must be set in ${build.dir}/build.properties.</fail>
+		<fail unless="mxmlc.exe">The "mxmlc.exe" property must be set in ${build.dir}/build.properties.</fail>
+	</target>
+	
+    <target name="compile" depends="clean">
+        <echo message="Project name: ${ant.project.name}"/>
+        <echo message="Ant: ${env.ANT_HOME} Flex: ${env.FLEX_HOME}"/>
+        <mxmlc 
+            file="${src.dir}/${ant.project.name}.mxml" 
+            output="${bin.dir}/${ant.project.name}.swf"           
+            keep-generated-actionscript="true"
+            actionscript-file-encoding="UTF-8"
+            incremental="true"
+            optimize="true"
+            >
+            <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+            <source-path path-element="${FLEX_HOME}/frameworks"/>
+            <!-- List of SWC files or directories that contain SWC files. -->
+            <!--
+            <compiler.library-path dir="${FLEX_HOME}/frameworks" append="true">
+                <include name="libs" />
+                <include name="../bundles/{locale}" />
+            </compiler.library-path>
+
+            <compiler.include-libraries dir="${swf.output}" append="true">
+                <include name="MyComponents.swc" />
+                <include name="AcmeComponents.swc" />
+                <include name="DharmaComponents.swc" />
+            </compiler.include-libraries>                   
+            -->
+        </mxmlc>
+    </target>
+    
+    <target name="clean">
+        <delete failonerror="false" dir="${src.dir}/generated"/>
+        <delete failonerror="false" dir="${build.dir}/generated"/>
+        <delete failonerror="false">
+            <fileset dir="${bin.dir}" includes="${ant.project.name}.swf"/>
+        </delete>    
+    </target> 
+    	
+	<!--
+		Compile the unit tests for the library, placing the test runner .swf file
+		in the bin directory.
+	-->
+	<target name="compileTests" depends="properties">
+		<exec executable="${mxmlc.exe}" dir="${basedir}">
+			<!-- Point to the main test runner's application mxml file -->
+			<arg line="'${tests.dir}/${testRunner.dir}/${testRunner.name}.mxml'" />
+			
+			<!-- Place the built .swf file in the "bin" directory -->
+			<arg line="-o '${bin.dir}/${testRunner.name}.swf'" />
+			
+			<!-- Define source directories for "src" and "tests" -->
+			<arg line="-sp ${src.dir}" />
+			<arg line="-sp ${tests.dir}" />
+			
+			<!-- Include the necessary framework libraries in the class path -->
+			<arg line="-l '${flex2sdk.lib.dir}'" />
+			
+			<!-- Include in the corelib.swc in the class path -->
+			<arg line="-l ${corelib.swc}" />
+			
+			<!-- Include in the flexunit.swc in the class path -->
+			<arg line="-l ${flexunit.swc}" />
+			
+			<!-- Include locale-specific items in the path -->
+			<arg line="-locale ${flex2sdk.locale}" />
+			<arg line="-l '${flex2sdk.locale.dir}'" />
+		</exec>
+	</target>
+	
+	<!--
+		Runs the unit tests for the library in the stand-alone Flash Player
+	-->
+	<target name="test" depends="compileTests">
+		<!--
+			If/When we add support for determinig the status of unit tests
+			as part of the ANT build process, we need to change the spawn to
+			"no" so that ANT waits until the test runner closes before
+			proceeding.
+		-->
+		<exec executable="${flashDebugPlayer.exe}" spawn="yes">
+			<arg line="${bin.dir}/${testRunner.name}.swf" />
+		</exec>
+	</target>
+	
+	<!--
+		Compile all of the classes under the "src" tree into a .swc file
+	-->
+	<target name="lib" depends="properties">
+		<exec executable="${compc.exe}" dir="${basedir}">
+			<!-- Specify the name of the output file -->
+			<arg line="-o '${bin.dir}/${library.name}.swc'" />
+		
+			<!-- Include the necessary framework libraries as external libraries -->
+			<arg line="-el '${flex2sdk.lib.dir}'" />
+			
+			<!-- Include in the corelib.swc as an external library -->
+			<arg line="-el ${corelib.swc}" />
+			
+			<!-- Specify the main source path as "src" -->
+			<arg line="-sp ${src.dir}" />
+			
+			<!-- Include all of the classes in the "src" tree -->
+			<arg line="-is ${src.dir}" />
+		</exec>
+	</target>
+	
+	<!--
+		Generate ASDoc output for the library
+	-->
+	<target name="docs" depends="properties">
+		<!-- Clean out the contents of the doc directory, without delete "docs" -->
+		<!--
+		<delete includeemptydirs="true">
+			<fileset dir="${docs.dir}" includes="**/*" />
+		</delete>
+		-->
+		
+		<exec executable="${asdoc.exe}" spawn="no">
+			<!-- Place the documentation in the "docs" directory -->
+			<arg line="-o ${docs.dir}" />
+			
+			<!-- Include in the corelib.swc in the class path -->
+			<arg line="-l ${corelib.swc}" />
+			
+			<!-- Specify the main source path as "src" -->
+			<arg line="-sp ${src.dir}" />
+			
+			<!-- Document all of the classes in the "src" tree -->
+			<arg line="-ds ${src.dir} " />
+			
+			<!-- Include the library name in the window title -->
+			<arg line="-window-title 'Adobe ActionScript 3.0 Library - ${library.name}' "/>
+		</exec>
+	</target>
+
+</project>

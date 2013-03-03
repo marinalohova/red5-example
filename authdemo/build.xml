@@ -1,0 +1,152 @@
+<?xml version="1.0" ?>
+<project name="authdemo" basedir="." default="war" xmlns:ivy="antlib:org.apache.ivy.ant">
+    <!-- project properties -->
+    <property environment="env"/>
+    <!-- user overides for project properties -->
+    <property file="${user.home}/build.properties"/>
+    <!-- base project properties -->
+    <property file="build.properties"/>
+    <property name="java.home" value="${env.JDK_HOME}"/>
+    <property name="src.dir" value="src"/>
+    <property name="lib.dir" value="www/WEB-INF/lib"/>
+    <property name="classes.dir" value="www/WEB-INF/classes"/>
+    <property name="dist.dir" value="dist"/>
+
+    <path id="project.classpath">
+        <fileset dir="${red5.root}/lib"/>
+        <pathelement location="${red5.root}/red5.jar"/>
+        <pathelement location="${red5.root}/lib/red5.jar"/>
+    	<!-- project specific libs -->
+        <fileset dir="${lib.dir}"/>
+    </path>
+    
+    <target name="prepare">
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${lib.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${classes.dir}"/>
+        <delete dir="${dist.dir}"/>    	
+    </target>
+
+	<target name="retrieve" description="Retrieves the libraries if needed">
+		<taskdef uri="antlib:org.apache.ivy.ant" resource="org/apache/ivy/ant/antlib.xml"
+		 classpath="${basedir}/lib/ivy.jar"/>
+		<property name="ivy.lib.dir" value="${basedir}/lib"/>
+		<ivy:settings file="ivysettings.xml"/>
+		<ivy:resolve file="ivy.xml" />
+		<ivy:retrieve />
+	</target>    
+    
+    <target name="compile" depends="prepare, retrieve">
+        <condition property="java.target_version" value="1.5">
+            <not>
+                <isset property="java.target_version"/>
+            </not>
+        </condition>
+        <echo>java.home is ${java.home} and the target version is ${java.target_version}</echo>
+
+        <echo>red5.root is ${red5.root}</echo>
+
+        <echo>javac version: ${java.version}</echo>
+        <property name="dest.dir" value="${classes.dir}"/>
+        <javac sourcepath="" srcdir="${src.dir}" destdir="${dest.dir}" classpathref="project.classpath"
+             optimize="${build.optimize}" verbose="${build.verbose}" fork="${build.fork}" nowarn="${build.nowarn}"
+             deprecation="${build.deprecation}" debug="${debug.state}" compiler="modern"
+             source="${java.target_version}" target="${java.target_version}" listfiles="false"/>
+             
+		<copy todir="${dest.dir}" failonerror="true">
+		    <fileset dir="${src.dir}">
+				<include name="**/*.properties"/>
+				<include name="**/*.xml"/>
+				<include name="**/*.xsd"/>
+		    </fileset>
+		</copy>
+    </target>
+
+    
+    <target name="jar" depends="compile">
+        <tstamp prefix="build">
+            <format property="TODAY" pattern="d-MMMM-yyyy" locale="en"/>
+        </tstamp>
+        <jar destfile="${dist.dir}/${ant.project.name}.jar">
+            <fileset dir="${classes.dir}">
+                <include name="**"/>
+            </fileset>
+			<manifest>
+
+				<attribute name="Built" value="${build.TODAY} by ${user.name}"/>
+				<attribute name="Build-OS" value="${os.name} ${os.version}"/>
+				<attribute name="Build-Java" value="Java ${java.version}"/>
+			</manifest>
+        </jar>
+    </target>
+
+    <target name="war" depends="compile">
+        <tstamp prefix="build">
+            <format property="TODAY" pattern="d-MMMM-yyyy" locale="en"/>
+        </tstamp>
+		<copy todir="${lib.dir}" failonerror="true">
+		    <fileset dir="lib">
+				<include name="**/spring-security-*.jar"/>
+				<include name="**/org.springframework.transaction-*.jar"/>
+		    </fileset>
+		</copy>		
+		<war destfile="${dist.dir}/${ant.project.name}.war" webxml="www/WEB-INF/web.xml">
+			<fileset dir="www">
+				<exclude name="**/src/**"/>
+				<exclude name="**/*.jar"/>
+			</fileset>
+			<lib dir="${lib.dir}"/>
+			<manifest>
+				<attribute name="Built" value="${build.TODAY} by ${user.name}"/>
+				<attribute name="Build-OS" value="${os.name} ${os.version}"/>
+				<attribute name="Build-Java" value="Java ${java.version}"/>
+			</manifest>
+		</war>
+    </target>
+	
+	<target name="-check-red5-home">
+		<echo message="Using ${red5.root} for Red5 root"/>
+		<condition property="red5-home-not-set" value="true">
+			<not>
+				<isset property="red5.root"/>
+			</not>
+		</condition>	
+	</target>
+	
+	<target name="deploy" depends="-check-red5-home, war" unless="red5-home-not-set" description="Deploys the war while cycling the server">
+		<!-- shutdown currently running instance -->
+		<java classname="org.red5.server.Shutdown" fork="true">
+			<classpath>
+				<pathelement location="${red5.root}/conf"/>
+				<pathelement location="${red5.root}/boot.jar"/>
+			</classpath>
+			<jvmarg value="-Dred5.root=${red5.root}"/>
+			<arg value="9999"/>
+			<arg value="red5user"/>
+			<arg value="changeme"/>
+		</java>
+		<!-- copy war to red5 -->
+		<copy todir="${red5.root}/webapps" file="${dist.dir}/${ant.project.name}.war" failonerror="true"/>
+		<!--  remove currently deployed version -->
+		<delete dir="${red5.root}/webapps/${ant.project.name}" failonerror="false"/>
+		<!-- start red5 -->
+		<java classname="org.red5.server.Bootstrap" fork="true">
+			<classpath>
+				<pathelement location="${red5.root}/conf"/>
+				<pathelement location="${red5.root}/boot.jar"/>
+			</classpath>
+			<jvmarg value="-Dred5.root=${red5.root}"/>
+		</java>
+	</target>
+	
+    <target name="all" depends="clean, jar, war"/>
+
+    
+    <target name="usage">
+        <echo>Type ant -p for available targets"</echo>
+    </target>
+</project>

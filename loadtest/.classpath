@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**/.svn/" kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/red5_server"/>
+	<classpathentry kind="var" path="Red5/lib/com.springsource.slf4j.api-1.6.1.jar"/>
+	<classpathentry kind="var" path="Red5/lib/logback-core-0.9.28.jar"/>
+	<classpathentry kind="var" path="Red5/lib/commons-lang3-3.1.jar"/>
+	<classpathentry kind="var" path="Red5/lib/spring-beans-3.0.6.RELEASE.jar"/>
+	<classpathentry kind="var" path="Red5/lib/spring-context-3.0.6.RELEASE.jar"/>
+	<classpathentry kind="var" path="Red5/lib/spring-context-support-3.0.6.RELEASE.jar"/>
+	<classpathentry kind="var" path="Red5/lib/spring-core-3.0.6.RELEASE.jar"/>
+	<classpathentry kind="output" path="www/WEB-INF/classes"/>
+</classpath>

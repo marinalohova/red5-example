@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="1.3" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+    <info organisation="red5" module="echo" />
+	<configurations>
+	    <conf name="default"/>
+	    <conf name="war" extends="default"/>
+	</configurations>
+    <dependencies>
+        <!-- J2EE --> 
+        <dependency org="javax" name="javaee-api" rev="5.1.1"/>
+        <!-- Spring --> 
+        <dependency org="spring" name="spring-beans" rev="3.0.0"/>
+        <dependency org="spring" name="spring-context" rev="3.0.0"/>
+        <dependency org="spring" name="spring-core" rev="3.0.0"/>
+        <!-- Logging --> 
+        <dependency name="slf4j-api" rev="1.5.10" />
+        <dependency name="jcl-over-slf4j" rev="1.5.10" />
+        <dependency name="log4j-over-slf4j" rev="1.5.10" />
+        <dependency name="jul-to-slf4j" rev="1.5.10" />
+        <dependency name="logback-core" rev="0.9.18" />
+        <dependency name="logback-classic" rev="0.9.18" />
+        <!-- War version -->
+        <dependency org="red5" name="red5-remoting" rev="0.8.0" conf="war->*"/>        
+    </dependencies>
+</ivy-module>

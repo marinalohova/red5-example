@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+    <info organisation="red5" module="authdemo" />
+    <configurations>
+        <conf name="default"/>
+    </configurations>
+    <dependencies>
+        <!-- JEE -->
+        <dependency org="javax" name="javaee-api" rev="5.1.2" />
+        <!-- Spring --> 
+        <dependency org="org.springframework" name="org.springframework.asm" rev="3.1.1.RELEASE" transitive="false" />
+        <dependency org="org.springframework" name="org.springframework.beans" rev="3.1.1.RELEASE" transitive="false" />
+        <dependency org="org.springframework" name="org.springframework.context" rev="3.1.1.RELEASE" transitive="false" />
+        <dependency org="org.springframework" name="org.springframework.core" rev="3.1.1.RELEASE" transitive="false" />
+        <dependency org="org.springframework" name="org.springframework.expression" rev="3.1.1.RELEASE" transitive="false" />
+        <dependency org="org.springframework" name="org.springframework.transaction" rev="3.1.1.RELEASE" transitive="false" />
+        <dependency org="org.springframework" name="org.springframework.web" rev="3.1.1.RELEASE" transitive="false" />
+        <!-- Security -->
+        <dependency org="org.springframework.security" name="spring-security-acl" rev="3.0.7.RELEASE" transitive="false" />
+        <dependency org="org.springframework.security" name="spring-security-config" rev="3.0.7.RELEASE" transitive="false" />
+        <dependency org="org.springframework.security" name="spring-security-core" rev="3.0.7.RELEASE" transitive="false" />
+        <!-- Logging --> 
+        <dependency org="org.slf4j" name="com.springsource.slf4j.api" rev="1.6.1" transitive="false" />
+        <dependency org="org.slf4j" name="com.springsource.slf4j.bridge" rev="1.6.1" transitive="false" />
+        <dependency name="jul-to-slf4j" rev="1.6.1" />
+        <dependency name="log4j-over-slf4j" rev="1.6.1" />
+        <dependency name="jcl-over-slf4j" rev="1.6.1" />    
+        <dependency name="logback-classic" rev="0.9.28" />
+        <dependency name="logback-core" rev="0.9.28" />
+        <!-- Apache commons -->
+        <dependency org="org.apache.commons" name="commons-codec" rev="1.6" />
+        <!-- Crypto -->
+        <dependency name="bcprov-jdk16" rev="145" />
+    </dependencies>
+</ivy-module>

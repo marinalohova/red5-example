@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<contextName>admin</contextName>
+	
+	<jmxConfigurator contextName="admin" />
+
+	<appender name="admin" class="ch.qos.logback.core.FileAppender">
+		<File>log/admin.log</File>
+		<Append>false</Append>
+		<Encoding>UTF-8</Encoding>
+		<BufferedIO>false</BufferedIO>
+		<ImmediateFlush>true</ImmediateFlush>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%date [%thread] %-5level %logger{35} - %msg%n
+			</Pattern>
+		</layout>
+	</appender>
+	<root>
+		<appender-ref ref="admin" />
+	</root>	
+	<logger name="org.red5.webapps.admin">
+		<level value="TRACE" />
+	</logger>		
+	<logger name="org.red5.components">
+		<level value="TRACE" />
+	</logger>		
+</configuration>

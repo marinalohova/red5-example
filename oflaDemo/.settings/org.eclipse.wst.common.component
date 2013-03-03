@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="oflaDemo">
+        <wb-resource deploy-path="/" source-path="/src/main/webapp"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/javascript"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/python"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/ruby"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/groovy"/>
+        <property name="context-root" value="oflaDemo"/>
+        <property name="java-output-path" value="/target/test-classes"/>
+    </wb-module>
+</project-modules>
